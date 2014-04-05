@@ -1,0 +1,9 @@
+This is a PhoneGap application to read data from the accelerometer on the iPhone and present that data in graphical and text format to the user.
+
+
+                          PhoneGap
+HTML5/CSS3/JavaScript  -------------> iOS app
+
+This file should be located inside the "www" folder of the PhoneGap project.
+
+Plugins used: Accelerometer

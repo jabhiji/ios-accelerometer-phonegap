@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+    <title>Acceleration Example</title>
+
+    <script type="text/javascript" charset="utf-8" src="phonegap.js"></script>
+  </head>
+
+  <body>
+
+    <h3>ACCELEROMETER</h3>
+    <p>Using the PhoneGap API</p>
+
+    <!-- graphics window -->
+    <canvas id="canvas" width="300" height="300">
+    <p>Your browser does not support HTML5 canvas</p>
+    </canvas>
+    
+    <!-- Text values -->
+    <div id="accelerometer">Waiting for accelerometer...</div>
+
+    <!-- JavaScript code for getting acceleration data and
+         drawing some of that data on the canvas -->
+    <script>
+
+    var canvas = document.getElementById('canvas'), 
+        xmax = document.getElementById("canvas").getAttribute("width"),
+        ymax = document.getElementById("canvas").getAttribute("height"),
+        context = canvas.getContext('2d');
+
+    // The watch id references the current `watchAcceleration`
+    var watchID = null;
+
+    // Wait for Cordova to load
+    //
+    document.addEventListener("deviceready", onDeviceReady, false);
+
+    // Cordova is ready
+    //
+    function onDeviceReady() {
+        startWatch();
+    }
+
+    // Start watching the acceleration
+    //
+    function startWatch() {
+
+        // Update acceleration every 100 milliseconds
+        var options = { frequency: 100 };
+
+        watchID = navigator.accelerometer.watchAcceleration(onSuccess, onError, options);
+    }
+
+    // Stop watching the acceleration
+    //
+    function stopWatch() {
+        if (watchID) {
+            navigator.accelerometer.clearWatch(watchID);
+            watchID = null;
+        }
+    }
+
+    // onSuccess: Get a snapshot of the current acceleration
+    //
+    function onSuccess(acceleration) {
+        var element = document.getElementById('accelerometer');
+        element.innerHTML = 'Acceleration X: ' + acceleration.x + '<br />' +
+                            'Acceleration Y: ' + acceleration.y + '<br />' +
+                            'Acceleration Z: ' + acceleration.z;  
+
+        // draw the instantaneous acceleration vector on screen
+        drawArrow(acceleration.x, acceleration.y, acceleration.z);
+    }
+
+    // onError: Failed to get the acceleration
+    //
+    function onError() {
+        alert('onError!');
+    }
+
+    function drawArrow(ax,ay,az)
+    {
+        // paint canvas black
+        context.fillStyle="black";
+        context.fillRect(0,0,xmax,ymax);
+
+        // draw vertical centerline
+        context.beginPath();
+        context.moveTo(xmax/2,0);
+        context.lineTo(xmax/2,ymax);
+        context.strokeStyle="white";
+        context.lineWidth=0.5;
+        context.stroke();
+
+        // draw horizontal centerline
+        context.beginPath();
+        context.moveTo(0,ymax/2);
+        context.lineTo(xmax,ymax/2);
+        context.strokeStyle="white";
+        context.lineWidth=0.5;
+        context.stroke();
+
+        // draw "X"
+        context.font = '20pt Arial';
+        context.lineWidth = 2;
+        context.strokeStyle = 'yellow';
+        context.strokeText("X", canvas.width/2 + 120, canvas.height/2 + 10);
+
+        // draw "Y"
+        context.font = '20pt Arial';
+        context.lineWidth = 2;
+        context.strokeStyle = 'yellow';
+        context.strokeText("Y", canvas.width/2 - 10, 25);
+
+        // circe of gravitational acceleration
+        context.beginPath();
+        context.arc(xmax/2,ymax/2,0.4*xmax,0,2*Math.PI,false);
+        context.strokeStyle="blue";
+        context.lineWidth=0.5;
+        context.stroke();
+
+        // draw yellow acceleration vector
+        context.beginPath();
+        context.moveTo(xmax/2,ymax/2);
+        context.lineTo(xmax/2 + 0.4*xmax*ax/9.81, ymax/2 - 0.4*ymax*ay/9.81);
+        context.strokeStyle="yellow";
+        context.lineWidth=5.0;
+        context.stroke();
+    }
+
+    </script>
+
+  </body>
+</html>
